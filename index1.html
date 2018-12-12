@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Vue 计数器例子</title>
+    <script src="https://cdn.bootcss.com/vue/2.5.17/vue.js"></script>
+    <script src="https://cdn.bootcss.com/vuex/3.0.1/vuex.js"></script>
+</head>
+
+<body>
+    <!-- ------------------------------------------------------------------- -->
+    <!-- |                                                                  |-->
+    <!-- |                            Counter.vue                           |-->
+    <!-- |                                                                  |-->
+    <!-- ------------------------------------------------------------------- -->
+    <template id="Counter">
+        <div>
+            点击: {{ $store.state.count }} 次数, 数字是 {{ evenOrOdd }}。
+            <button @click="increment">+</button>
+            <button @click="decrement">-</button>
+            <button @click="incrementIfOdd">如果奇数就增加</button>
+            <button @click="incrementAsync">异步增加</button>
+            <button @click="setcount(0)">计数清零</button>
+        </div>
+    </template>
+    <script>
+    var pageqrcode = Vue.component('counter', {
+        template: '#Counter',
+        computed: Vuex.mapGetters([
+            'evenOrOdd'
+        ]),
+        methods: Vuex.mapActions([
+            'increment',
+            'decrement',
+            'incrementIfOdd',
+            'incrementAsync',
+            'setcount'
+        ])
+    });
+    </script>
+    <!-- ------------------------------------------------------------------- -->
+    <!-- |                                                                  |-->
+    <!-- |                            store.js                              |-->
+    <!-- |                                                                  |-->
+    <!-- ------------------------------------------------------------------- -->
+    <script type="text/javascript">
+    //仓库 https://vuex.vuejs.org/zh/guide/state.html
+    var store = new Vuex.Store({
+        //状态
+        state: {
+            count: 0
+        },
+        mutations: {
+            event_increment(_state) {
+                _state.count++;
+            },
+            event_decrement(_state) {
+                _state.count--;
+            },
+            event_setcount(_state, _number) {
+                _state.count = _number;
+            }
+        },
+        actions: {
+            setcount(_state, number) {
+                _state.commit('event_setcount', number);
+            },
+            increment(_state) {
+                _state.commit('event_increment');
+            },
+            decrement(_state) {
+                _state.commit('event_decrement');
+            },
+            incrementIfOdd(_state) {
+                if ((store.state.count + 1) % 2 === 0) {
+                    _state.commit('event_increment');
+                }
+            },
+            incrementAsync(_state) {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        _state.commit('event_increment')
+                        resolve()
+                    }, 1000);
+                })
+            }
+        },
+        getters: {
+            evenOrOdd: function(_state) {
+                return _state.count % 2 === 0 ? '偶数' : '奇数';
+            }
+        }
+    })
+    </script>
+    <!-- ------------------------------------------------------------------- -->
+    <!-- |                                                                  |-->
+    <!-- |                            app.vue                               |-->
+    <!-- |                                                                  |-->
+    <!-- ------------------------------------------------------------------- -->
+    <div id="app">
+        <h1>统计点击按钮</h1>
+        <counter></counter>
+    </div>
+    <!-- ------------------------------------------------------------------- -->
+    <!-- |                                                                  |-->
+    <!-- |                            app.js                                |-->
+    <!-- |                                                                  |-->
+    <!-- ------------------------------------------------------------------- -->
+    <script type="text/javascript">
+    new Vue({
+        el: '#app',
+        store
+    })
+    </script>
+    <!-- ------------------------------------------------------------------- -->
+    <!-- |                                                                  |-->
+    <!-- |                          webpack.config.js                       |-->
+    <!-- |                                                                  |-->
+    <!-- ------------------------------------------------------------------- -->
+</body>
+
+</html>
